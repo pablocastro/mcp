@@ -5,13 +5,15 @@ using System.Text.Json.Serialization;
 using Azure.Mcp.Tools.Search.Commands.Index;
 using Azure.Mcp.Tools.Search.Commands.Knowledge;
 using Azure.Mcp.Tools.Search.Commands.Service;
+using Azure.Mcp.Tools.Search.Models;
 
 namespace Azure.Mcp.Tools.Search.Commands;
 
-[JsonSerializable(typeof(ServiceListCommand.ServiceListCommandResult))]
-[JsonSerializable(typeof(IndexListCommand.IndexListCommandResult))]
-[JsonSerializable(typeof(IndexDescribeCommand.IndexDescribeCommandResult))]
+[JsonSerializable(typeof(FieldInfo))]
+[JsonSerializable(typeof(IndexGetCommand.IndexGetCommandResult))]
+[JsonSerializable(typeof(IndexInfo))]
 [JsonSerializable(typeof(List<JsonElement>))]
+[JsonSerializable(typeof(ServiceListCommand.ServiceListCommandResult))]
 [JsonSerializable(typeof(KnowledgeSourceListCommand.KnowledgeSourceListCommandResult))]
 [JsonSerializable(typeof(KnowledgeAgentListCommand.KnowledgeAgentListCommandResult))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]

@@ -154,14 +154,9 @@ azmcp foundry models list [--search-for-free-playground <search-for-free-playgro
 ### Azure AI Search Operations
 
 ```bash
-# Get AI Search index
-azmcp search index describe --subscription <subscription> \
-                            --service <service> \
-                            --index <index>
-
-# List AI Search indexes in account
-azmcp search index list --subscription <subscription> \
-                        --service <service>
+# Get detailed properties of AI Search indexes
+azmcp search index get --service <service> \
+                       [--index <index>]
 
 # Query AI Search index
 azmcp search index query --subscription <subscription> \
@@ -217,21 +212,15 @@ azmcp appconfig kv unlock --subscription <subscription> \
                           [--label <label>]
 ```
 
-### Azure CLI Operations
+### Azure App Lens Operations
 
 ```bash
-# Execute any Azure CLI command
-azmcp extension az --command "<command>"
-
-# Examples:
-# List resource groups
-azmcp extension az --command "group list"
-
-# Get storage account details
-azmcp extension az --command "storage account show --name <account> --resource-group <resource-group>"
-
-# List virtual machines
-azmcp extension az --command "vm list --resource-group <resource-group>"
+# Diagnose resource using Azure App Lens
+azmcp applens resource diagnose --subscription <subscription> \
+                                --resource-group <resource-group> \
+                                --question <question> \
+                                --resource-type <resource-type> \
+                                --resource <resource>
 ```
 
 ### Azure Container Registry (ACR) Operations
@@ -453,17 +442,6 @@ azmcp postgres server param set --subscription <subscription> \
                                 --value <value>
 ```
 
-### Azure Developer CLI Operations
-
-```bash
-# Execute any Azure CLI command
-azmcp extension azd --command "<command>"
-
-# Examples:
-# Create a sample todo list app with NodeJS and MongoDB
-azmcp extension azd --command "init --template todo-nodejs-mongo"
-```
-
 ### Azure Deploy Operations
 
 ```bash
@@ -492,6 +470,14 @@ azmcp deploy plan get --workspace-folder <workspace-folder> \
                       --target-app-service <target-app-service> \
                       --provisioning-tool <provisioning-tool> \
                       [--azd-iac-options <azd-iac-options>]
+```
+
+### Azure Event Grid Operations
+
+```bash
+# List all Event Grid topics in a subscription or resource group
+azmcp eventgrid topic list --subscription <subscription> \
+                           [--resource-group <resource-group>]
 ```
 
 ### Azure Function App Operations
@@ -561,6 +547,17 @@ azmcp aks cluster get --subscription <subscription> \
 
 # List AKS clusters in a subscription
 azmcp aks cluster list --subscription <subscription>
+
+# List AKS cluster's nodepools
+azmcp aks nodepool list --subscription <subscription> \
+                        --resource-group <resource-group> \
+                        --cluster <cluster>
+
+# Get details of a specific AKS nodepool
+azmcp aks nodepool get --subscription <subscription> \
+                       --resource-group <resource-group> \
+                       --cluster <cluster> \
+                       --nodepool <nodepool>
 ```
 
 ### Azure Load Testing Operations
@@ -876,14 +873,13 @@ azmcp resourcehealth availability-status get --resourceId <resource-id>
 # List availability statuses for all resources in a subscription
 azmcp resourcehealth availability-status list --subscription <subscription> \
                                               [--resource-group <resource-group>]
-```
 
-### Azure Event Grid Operations
-
-```bash
-# List all Event Grid topics in a subscription or resource group
-azmcp eventgrid topic list --subscription <subscription> \
-                           [--resource-group <resource-group>]
+# List service health events in a subscription
+azmcp resourcehealth service-health-events list --subscription <subscription> \
+                                                [--event-type <event-type>] \
+                                                [--status <status>] \
+                                                [--query-start-time <start-time>] \
+                                                [--query-end-time <end-time>]
 ```
 
 ### Azure Service Bus Operations
@@ -970,13 +966,10 @@ azmcp storage account create --subscription <subscription> \
                              --access-tier <access-tier> \
                              --enable-hierarchical-namespace false
 
-# Get detailed information about a specific Storage account
-azmcp storage account details --subscription <subscription> \
-                              --account <account> \
+# Get detailed properties of Storage accounts
+azmcp storage account get --subscription <subscription> \
+                              [--account <account>] \
                               [--tenant <tenant>]
-
-# List Storage accounts in a subscription
-azmcp storage account list --subscription <subscription>
 
 # Set access tier for multiple blobs in a batch operation
 azmcp storage blob batch set-tier --subscription <subscription> \
@@ -990,27 +983,18 @@ azmcp storage blob container create --subscription <subscription> \
                                     --account <account> \
                                     --container <container>
 
-# Get detailed properties of a storage container
-azmcp storage blob container details --subscription <subscription> \
+# Get detailed properties of Storage containers
+azmcp storage blob container get --subscription <subscription> \
                                      --account <account> \
-                                     --container <container>
+                                     [--container <container>]
 
-# List containers in a Storage blob service
-azmcp storage blob container list --subscription <subscription> \
-                                  --account <account>
-
-# Get detailed properties of a blob
-azmcp storage blob details --subscription <subscription> \
+# Get detailed properties of Storage blobs
+azmcp storage blob get --subscription <subscription> \
                            --account <account> \
                            --container <container> \
-                           --blob <blob>
+                           [--blob <blob>]
 
-# List blobs in a Storage container
-azmcp storage blob list --subscription <subscription> \
-                        --account <account> \
-                        --container <container>
-
-# Upload a file to a Storage blob container
+# Upload a file to a Storage blob
 azmcp storage blob upload --subscription <subscription> \
                           --account <account> \
                           --container <container> \
@@ -1193,4 +1177,3 @@ The CLI returns structured JSON responses for errors, including:
 
 - Service availability issues
 - Authentication errors
-

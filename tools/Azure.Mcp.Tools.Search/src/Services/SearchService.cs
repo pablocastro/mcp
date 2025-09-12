@@ -12,7 +12,6 @@ using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 using Azure.Search.Documents.Models;
-using static Azure.Mcp.Tools.Search.Commands.Index.IndexDescribeCommand;
 
 namespace Azure.Mcp.Tools.Search.Services;
 
@@ -64,26 +63,80 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
         return services;
     }
 
-    public async Task<List<IndexInfo>> ListIndexes(
+    public async Task<List<IndexInfo>> GetIndexDetails(
         string serviceName,
+        string? indexName,
         RetryPolicyOptions? retryPolicy = null)
     {
         ValidateRequiredParameters(serviceName);
 
         var indexes = new List<IndexInfo>();
 
+        if (string.IsNullOrEmpty(indexName))
+        {
+            try
+            {
+                var searchClient = await GetSearchIndexClient(serviceName, retryPolicy);
+                await foreach (var index in searchClient.GetIndexesAsync())
+                {
+                    indexes.Add(MapToIndexInfo(index));
+                }
+                return indexes;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving Search indexes: {ex.Message}", ex);
+            }
+        }
+        else
+        {
+            try
+            {
+                var searchClient = await GetSearchIndexClient(serviceName, retryPolicy);
+                var index = await searchClient.GetIndexAsync(indexName);
+
+                indexes.Add(MapToIndexInfo(index.Value));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving Search index details: {ex.Message}", ex);
+            }
+        }
+
+        return indexes;
+    }
+
+    public async Task<List<JsonElement>> QueryIndex(
+        string serviceName,
+        string indexName,
+        string searchText,
+        RetryPolicyOptions? retryPolicy = null)
+    {
+        ValidateRequiredParameters(serviceName, indexName, searchText);
+
         try
         {
             var searchClient = await GetSearchIndexClient(serviceName, retryPolicy);
-            await foreach (var index in searchClient.GetIndexesAsync())
+            var indexDefinition = await searchClient.GetIndexAsync(indexName);
+            var client = searchClient.GetSearchClient(indexName);
+
+            var options = new SearchOptions
             {
-                indexes.Add(new IndexInfo(index.Name, index.Description));
-            }
-            return indexes;
+                IncludeTotalCount = true,
+                Size = 20
+            };
+
+            var vectorFields = FindVectorFields(indexDefinition.Value);
+            var vectorizableFields = FindVectorizableFields(indexDefinition.Value, vectorFields);
+            ConfigureSearchOptions(searchText, options, indexDefinition.Value, vectorFields);
+
+            var searchResponse = await client.SearchAsync(searchText, SearchJsonContext.Default.JsonElement, options);
+
+            return await ProcessSearchResults(searchResponse);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error retrieving Search indexes: {ex.Message}", ex);
+            throw new Exception($"Error querying Search index: {ex.Message}", ex);
         }
     }
 
@@ -130,60 +183,6 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
         catch (Exception ex)
         {
             throw new Exception($"Error retrieving Search knowledge agents: {ex.Message}", ex);
-        }
-    }
-
-    public async Task<SearchIndexProxy?> DescribeIndex(
-        string serviceName,
-        string indexName,
-        RetryPolicyOptions? retryPolicy = null)
-    {
-        ValidateRequiredParameters(serviceName, indexName);
-
-        try
-        {
-            var searchClient = await GetSearchIndexClient(serviceName, retryPolicy);
-            var index = await searchClient.GetIndexAsync(indexName);
-
-            return new(index.Value);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error retrieving Search index details: {ex.Message}", ex);
-        }
-    }
-
-    public async Task<List<JsonElement>> QueryIndex(
-        string serviceName,
-        string indexName,
-        string searchText,
-        RetryPolicyOptions? retryPolicy = null)
-    {
-        ValidateRequiredParameters(serviceName, indexName, searchText);
-
-        try
-        {
-            var searchClient = await GetSearchIndexClient(serviceName, retryPolicy);
-            var indexDefinition = await searchClient.GetIndexAsync(indexName);
-            var client = searchClient.GetSearchClient(indexName);
-
-            var options = new SearchOptions
-            {
-                IncludeTotalCount = true,
-                Size = 20
-            };
-
-            var vectorFields = FindVectorFields(indexDefinition.Value);
-            var vectorizableFields = FindVectorizableFields(indexDefinition.Value, vectorFields);
-            ConfigureSearchOptions(searchText, options, indexDefinition.Value, vectorFields);
-
-            var searchResponse = await client.SearchAsync(searchText, SearchJsonContext.Default.JsonElement, options);
-
-            return await ProcessSearchResults(searchResponse);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error querying Search index: {ex.Message}", ex);
         }
     }
 
@@ -279,4 +278,11 @@ public sealed class SearchService(ISubscriptionService subscriptionService, ICac
             options.Retry.NetworkTimeout = TimeSpan.FromSeconds(retryPolicy.NetworkTimeoutSeconds);
         }
     }
+
+    private static IndexInfo MapToIndexInfo(SearchIndex index)
+        => new(index.Name, index.Description, [.. index.Fields.Select(MapToFieldInfo)]);
+
+    private static FieldInfo MapToFieldInfo(SearchField field)
+        => new(field.Name, field.Type.ToString(), field.IsKey, field.IsSearchable, field.IsFilterable, field.IsSortable,
+            field.IsFacetable, field.IsHidden != true);
 }
