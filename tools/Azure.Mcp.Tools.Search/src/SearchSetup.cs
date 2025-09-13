@@ -28,7 +28,7 @@ public class SearchSetup : IAreaSetup
         Search operations - Commands for Azure AI Search (formerly known as \"Azure Cognitive Search\") services,
         search indexes, knowledge sources and knowledge agents. Use this tool when you need to retrieve knowledge,
         search indexes, or introspect search services and their components. You can use knowledge agents for 
-        in-depth agentic retrieval, or use execute searches against search indexes for fast single-shot search. 
+        in-depth agentic retrieval, or just execute searches against search indexes for fast single-shot search. 
         There are also commands for listing indexes, knowledge sources and knowledge agents, and to describe 
         schemas. This tool supports  enterprise search, document search, and knowledge mining workloads. Do not 
         use this tool for database queries, Azure Monitor log searches, general web search, or simple string 
@@ -63,5 +63,6 @@ public class SearchSetup : IAreaSetup
         var knowledgeAgent = new CommandGroup("agent", "Knowledge agent operations - list knowledge agents associated with a service.");
         knowledge.AddSubGroup(knowledgeAgent);
         knowledgeAgent.AddCommand("list", new KnowledgeAgentListCommand(loggerFactory.CreateLogger<KnowledgeAgentListCommand>()));
+        knowledgeAgent.AddCommand("runretrieval", new KnowledgeAgentRunRetrievalCommand(loggerFactory.CreateLogger<KnowledgeAgentRunRetrievalCommand>()));
     }
 }
