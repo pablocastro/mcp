@@ -9,6 +9,12 @@ The Azure MCP Server updates automatically by default whenever a new release com
 - Added elicitation support. An elicitation request is sent if the tool annotation secret hint is true. [[#404](https://github.com/microsoft/mcp/pull/404)]
 - Added the following Azure Managed Lustre commands: [[#100](https://github.com/microsoft/mcp/issues/100)]
   - `azmcp_azuremanagedlustre_filesystem_get_sku_info`: Get information about Azure Managed Lustre SKU.
+- Added support for Azure AI Search knowledge agents and knowledge sources (preview):
+  - `azmcp_search_knowledge_source_list` - List knowledge sources defined in an Azure AI Search service.
+  - `azmcp_search_knowledge_agent_list` - List knowledge agents defined in an Azure AI Search service.
+  - `azmcp_search_knowledge_agent_run-retrieval` - Execute a retrieval operation using a specified knowledge agent with optional multi-turn conversation history.
+  These commands enable agentic retrieval and reasoning grounded in Azure AI Search's new knowledge constructs.
+- Bumped Azure AI Search .NET SDK dependency to align with knowledge agent APIs.
 
 ### Features Removed
 
