@@ -63,6 +63,6 @@ public class SearchSetup : IAreaSetup
         var knowledgeAgent = new CommandGroup("agent", "Knowledge agent operations - list knowledge agents associated with a service.");
         knowledge.AddSubGroup(knowledgeAgent);
         knowledgeAgent.AddCommand("list", new KnowledgeAgentListCommand(loggerFactory.CreateLogger<KnowledgeAgentListCommand>()));
-        knowledgeAgent.AddCommand("runretrieval", new KnowledgeAgentRunRetrievalCommand(loggerFactory.CreateLogger<KnowledgeAgentRunRetrievalCommand>()));
+        knowledgeAgent.AddCommand("run-retrieval", new KnowledgeAgentRunRetrievalCommand(loggerFactory.CreateLogger<KnowledgeAgentRunRetrievalCommand>()));
     }
 }
