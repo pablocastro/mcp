@@ -15,8 +15,6 @@ public sealed class FirewallRuleDeleteCommand(ILogger<FirewallRuleDeleteCommand>
 {
     private const string CommandTitle = "Delete SQL Server Firewall Rule";
 
-    private readonly Option<string> _firewallRuleNameOption = SqlOptionDefinitions.FirewallRuleNameOption;
-
     public override string Name => "delete";
 
     public override string Description =>
@@ -33,7 +31,7 @@ public sealed class FirewallRuleDeleteCommand(ILogger<FirewallRuleDeleteCommand>
     {
         Destructive = true,
         Idempotent = true,
-        OpenWorld = true,
+        OpenWorld = false,
         ReadOnly = false,
         LocalRequired = false,
         Secret = false
@@ -42,13 +40,13 @@ public sealed class FirewallRuleDeleteCommand(ILogger<FirewallRuleDeleteCommand>
     protected override void RegisterOptions(Command command)
     {
         base.RegisterOptions(command);
-        command.Options.Add(_firewallRuleNameOption);
+        command.Options.Add(SqlOptionDefinitions.FirewallRuleNameOption);
     }
 
     protected override FirewallRuleDeleteOptions BindOptions(ParseResult parseResult)
     {
         var options = base.BindOptions(parseResult);
-        options.FirewallRuleName = parseResult.GetValueOrDefault(_firewallRuleNameOption);
+        options.FirewallRuleName = parseResult.GetValueOrDefault<string>(SqlOptionDefinitions.FirewallRuleNameOption.Name);
         return options;
     }
 
@@ -72,9 +70,7 @@ public sealed class FirewallRuleDeleteCommand(ILogger<FirewallRuleDeleteCommand>
                 options.FirewallRuleName!,
                 options.RetryPolicy);
 
-            context.Response.Results = ResponseResult.Create(
-                new FirewallRuleDeleteResult(deleted, options.FirewallRuleName!),
-                SqlJsonContext.Default.FirewallRuleDeleteResult);
+            context.Response.Results = ResponseResult.Create(new(deleted, options.FirewallRuleName!), SqlJsonContext.Default.FirewallRuleDeleteResult);
         }
         catch (Exception ex)
         {

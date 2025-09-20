@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Net;
-using Azure.Mcp.Core.Commands;
 using Azure.Mcp.Core.Models.Command;
 using Fabric.Mcp.Tools.PublicApi.Commands.PublicApis;
 using Fabric.Mcp.Tools.PublicApi.Models;
@@ -66,7 +64,7 @@ public class PublicApisCommandsTests
         var serviceProvider = services.BuildServiceProvider();
 
         var context = new CommandContext(serviceProvider);
-        var parseResult = CreateParseResult(command.GetCommand(), Array.Empty<string>());
+        var parseResult = CreateParseResult(command.GetCommand(), []);
 
         // Act
         var result = await command.ExecuteAsync(context, parseResult);
@@ -92,7 +90,7 @@ public class PublicApisCommandsTests
         var serviceProvider = services.BuildServiceProvider();
 
         var context = new CommandContext(serviceProvider);
-        var parseResult = CreateParseResult(command.GetCommand(), Array.Empty<string>());
+        var parseResult = CreateParseResult(command.GetCommand(), []);
 
         // Act
         var result = await command.ExecuteAsync(context, parseResult);
@@ -150,7 +148,7 @@ public class PublicApisCommandsTests
         var serviceProvider = services.BuildServiceProvider();
 
         var context = new CommandContext(serviceProvider);
-        var parseResult = CreateParseResult(command.GetCommand(), Array.Empty<string>());
+        var parseResult = CreateParseResult(command.GetCommand(), []);
 
         // Act
         var result = await command.ExecuteAsync(context, parseResult);
@@ -176,7 +174,7 @@ public class PublicApisCommandsTests
         var serviceProvider = services.BuildServiceProvider();
 
         var context = new CommandContext(serviceProvider);
-        var parseResult = CreateParseResult(command.GetCommand(), Array.Empty<string>());
+        var parseResult = CreateParseResult(command.GetCommand(), []);
 
         // Act
         var result = await command.ExecuteAsync(context, parseResult);
@@ -235,7 +233,7 @@ public class PublicApisCommandsTests
         var serviceProvider = services.BuildServiceProvider();
 
         var context = new CommandContext(serviceProvider);
-        var parseResult = CreateParseResult(command.GetCommand(), new[] { "--workload-type", "notebook" });
+        var parseResult = CreateParseResult(command.GetCommand(), ["--workload-type", "notebook"]);
 
         // Act
         var result = await command.ExecuteAsync(context, parseResult);
@@ -259,7 +257,7 @@ public class PublicApisCommandsTests
         var serviceProvider = services.BuildServiceProvider();
 
         var context = new CommandContext(serviceProvider);
-        var parseResult = CreateParseResult(command.GetCommand(), Array.Empty<string>());
+        var parseResult = CreateParseResult(command.GetCommand(), []);
 
         // Act
         var result = await command.ExecuteAsync(context, parseResult);
@@ -283,7 +281,7 @@ public class PublicApisCommandsTests
         var serviceProvider = services.BuildServiceProvider();
 
         var context = new CommandContext(serviceProvider);
-        var parseResult = CreateParseResult(command.GetCommand(), new[] { "--workload-type", "common" });
+        var parseResult = CreateParseResult(command.GetCommand(), ["--workload-type", "common"]);
 
         // Act
         var result = await command.ExecuteAsync(context, parseResult);
@@ -311,7 +309,7 @@ public class PublicApisCommandsTests
         var serviceProvider = services.BuildServiceProvider();
 
         var context = new CommandContext(serviceProvider);
-        var parseResult = CreateParseResult(command.GetCommand(), new[] { "--workload-type", "invalid-workload" });
+        var parseResult = CreateParseResult(command.GetCommand(), ["--workload-type", "invalid-workload"]);
 
         // Act
         var result = await command.ExecuteAsync(context, parseResult);
@@ -338,7 +336,7 @@ public class PublicApisCommandsTests
         var serviceProvider = services.BuildServiceProvider();
 
         var context = new CommandContext(serviceProvider);
-        var parseResult = CreateParseResult(command.GetCommand(), new[] { "--workload-type", "notebook" });
+        var parseResult = CreateParseResult(command.GetCommand(), ["--workload-type", "notebook"]);
 
         // Act
         var result = await command.ExecuteAsync(context, parseResult);
@@ -363,7 +361,7 @@ public class PublicApisCommandsTests
         var serviceProvider = services.BuildServiceProvider();
 
         var context = new CommandContext(serviceProvider);
-        var parseResult = CreateParseResult(command.GetCommand(), new[] { "--workload-type", "notebook" });
+        var parseResult = CreateParseResult(command.GetCommand(), ["--workload-type", "notebook"]);
 
         // Act
         var result = await command.ExecuteAsync(context, parseResult);
